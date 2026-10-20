@@ -4,6 +4,11 @@ import { DateTime } from "luxon";
 test("review, create, edit, and delete an event on desktop and phone", async ({
   page,
 }) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await page
     .getByLabel("Workspace access token")
@@ -68,4 +73,5 @@ test("review, create, edit, and delete an event on desktop and phone", async ({
     path: `test-results/workspace-${test.info().project.name}.png`,
     fullPage: true,
   });
+  expect(errors).toEqual([]);
 });

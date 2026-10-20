@@ -12,6 +12,7 @@ from jarvis.db import Database
 from jarvis.worker import Worker
 
 settings = Settings(
+    web_dir=Path(__file__).resolve().parents[1] / "frontend" / "dist",
     data_dir=Path(tempfile.mkdtemp(prefix="jarvis-e2e-")),
     token="e2e-private-workspace-token",
     mcp_transport="inprocess",

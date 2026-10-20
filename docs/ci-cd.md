@@ -5,7 +5,7 @@
 `.github/workflows/ci.yml` runs on main pushes, pull requests, manual dispatch, and reusable workflow calls:
 
 1. **Backend:** Install locked Python dependencies; lint/format; run tests with an 80% coverage floor; upgrade/check/downgrade/re-upgrade migrations.
-2. **Frontend:** Install locked dependencies with npm 11.21.1; run unit tests and production build; install Chromium and run desktop/mobile integration tests against an isolated API and worker.
+2. **Frontend:** Install locked dependencies with npm 11.21.1; run unit tests and production build; install Chromium and run desktop/mobile integration tests against an isolated API and worker serving the production build, with no browser console errors.
 3. **Container:** Build the complete Linux CPU image, verify inference executables, and smoke-test the built UI and authenticated calendar API.
 
 Coverage and browser failure traces/screenshots are uploaded as artifacts. CI has read-only repository permissions. No models, personal recordings, Google credentials, or paid services are required. The real MCP subprocess is exercised with a temporary SQLite database; model and provider responses are controlled in deterministic tests.

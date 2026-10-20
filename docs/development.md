@@ -67,7 +67,7 @@ npm exec --prefix frontend -- playwright install chromium
 npm run test:e2e --prefix frontend
 ```
 
-The browser suite starts an isolated API/worker and Vite server on 8000/5173. Stop the normal development stack first. It uses temporary data and verifies that proposals do not create events before acceptance. Both desktop and mobile viewports run the create/edit/delete flow.
+The browser suite starts an isolated API/worker on port 8000 and serves the built frontend with production security headers. Run the frontend build first. Stop the normal development stack first. It uses temporary data and verifies that proposals do not create events before acceptance. Both desktop and mobile viewports run the create/edit/delete flow.
 
 Actual model evaluation is explicit, local, and isolated from personal calendars:
 

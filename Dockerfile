@@ -22,6 +22,8 @@ COPY requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.lock
 COPY --from=inference /build/whisper/bin/whisper-cli /usr/local/bin/whisper-cli
 COPY --from=inference /build/llama/bin/llama-server /usr/local/bin/llama-server
+COPY --from=inference /src/whisper/LICENSE /usr/share/licenses/whisper.cpp/LICENSE
+COPY --from=inference /src/llama/LICENSE /usr/share/licenses/llama.cpp/LICENSE
 COPY pyproject.toml alembic.ini ./
 COPY backend/ backend/
 RUN pip install --no-deps . && useradd --uid 10001 --create-home jarvis && mkdir -p /app/data/audio && chown -R jarvis:jarvis /app/data
