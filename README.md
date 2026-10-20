@@ -65,3 +65,4 @@ The local-model smoke evaluation is separate: `scripts/evaluate_local.py` uses a
 - [Product requirements and roadmap](docs/product-plan.md)
 - [Original V1 architecture proposal](docs/architecture-v1.md)
 - [Cloud hosting research](docs/cloud-hosting-research.md)
+- [Initial validation and limitations](docs/validation.md)

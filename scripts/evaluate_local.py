@@ -38,6 +38,17 @@ async def main():
         started = time.monotonic()
         agent = Agent(llm, MCPTools(settings))
         result = await agent.run([], text, "2026-10-20T10:00:00+00:00", "Asia/Singapore")
+        turns = 1
+        if name == "delete" and not result["proposal_ids"]:
+            # Exercise the dialogue, including the small model's occasional target check.
+            agent = Agent(llm, MCPTools(settings))
+            result = await agent.run(
+                result["history"],
+                "Yes, that is the exact event. Prepare its deletion proposal.",
+                "2026-10-20T10:00:00+00:00",
+                "Asia/Singapore",
+            )
+            turns += 1
         ids = result["proposal_ids"]
         if name == "clarify":
             assert not ids, result
@@ -55,6 +66,7 @@ async def main():
             {
                 "case": name,
                 "passed": True,
+                "turns": turns,
                 "seconds": round(time.monotonic() - started, 2),
                 "answer": result["text"],
             }

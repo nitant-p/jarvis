@@ -150,6 +150,7 @@ class Agent:
                     if (
                         re.search(
                             r"proposal.{0,60}(ready|review)|ready.{0,60}(proposal|delet)|"
+                            r"\bready.{0,40}\breview\b|"
                             r"i(?:'ve| have| successfully).{0,25}"
                             r"(created|updated|deleted|scheduled)",
                             answer,

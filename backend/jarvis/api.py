@@ -260,7 +260,7 @@ def create_app(settings=None, database=None):
             j.status, j.attempts, j.error = "queued", 0, None
             return {"id": j.id, "status": j.status}
 
-    static_dir = Path(__file__).resolve().parents[2] / "web"
+    static_dir = settings.web_dir
     # Source checkout has frontend at repository root; image uses /app/web.
     if not static_dir.exists():
         static_dir = Path.cwd() / "frontend" / "dist"

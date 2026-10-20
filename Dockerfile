@@ -26,7 +26,7 @@ COPY pyproject.toml alembic.ini ./
 COPY backend/ backend/
 RUN pip install --no-deps . && useradd --uid 10001 --create-home jarvis && mkdir -p /app/data/audio && chown -R jarvis:jarvis /app/data
 COPY --from=web /web/dist /app/web
-ENV JARVIS_DATA_DIR=/app/data PYTHONUNBUFFERED=1
+ENV JARVIS_DATA_DIR=/app/data JARVIS_WEB_DIR=/app/web PYTHONUNBUFFERED=1
 USER jarvis
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')" || exit 1

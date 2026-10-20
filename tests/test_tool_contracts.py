@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from jarvis.agent import Agent
 from jarvis.tools import InProcessTools, ToolRegistry
 from test_agent_worker import ScriptedModel, local_args, tool
@@ -43,9 +44,16 @@ def test_one_durable_capture_cannot_stage_duplicate_proposals(service, event_dat
     assert len(service.proposals()) == 1
 
 
-def test_proposal_claim_without_tool_is_repaired_before_showing_success(service, event_data):
+@pytest.mark.parametrize(
+    "claim",
+    [
+        "Your proposal is ready to review.",
+        "The deletion is ready for your review.",
+    ],
+)
+def test_proposal_claim_without_tool_is_repaired_before_showing_success(service, event_data, claim):
     model = ScriptedModel(
-        {"content": "Your proposal is ready to review."},
+        {"content": claim},
         tool("event_propose_create", local_args(event_data)),
     )
     result = asyncio.run(
@@ -59,3 +67,14 @@ def test_proposal_claim_without_tool_is_repaired_before_showing_success(service,
 
 def test_unknown_tool_cannot_approve_or_execute(service):
     assert ToolRegistry(service).call("approve_proposal", {})["status"] == "unknown_tool"
+
+
+def test_model_time_schema_cannot_request_offset_arithmetic(service, event_data):
+    registry = ToolRegistry(service)
+    schema = next(
+        t for t in registry.definitions() if t["function"]["name"] == "event_propose_create"
+    )
+    assert "pattern" in schema["function"]["parameters"]["properties"]["time"]
+    result = registry.call("event_propose_create", {**local_args(event_data), "time": "19:00:00Z"})
+    assert result["status"] == "needs_clarification"
+    assert not service.proposals()

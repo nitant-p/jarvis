@@ -99,3 +99,17 @@ def test_unknown_approval_fields_are_not_accepted(client, event_data):
         ).status_code
         == 422
     )
+
+
+def test_built_frontend_is_served_from_explicit_directory_after_package_install(settings, db):
+    from fastapi.testclient import TestClient
+    from jarvis.api import create_app
+
+    settings.web_dir = settings.data_dir / "built-ui"
+    (settings.web_dir / "assets").mkdir(parents=True)
+    (settings.web_dir / "index.html").write_text("<html>Jarvis production UI</html>")
+    (settings.web_dir / "assets" / "app.js").write_text("console.log('loaded')")
+    with TestClient(create_app(settings, db)) as client:
+        assert client.get("/").status_code == 200
+        assert "Jarvis production UI" in client.get("/").text
+        assert client.get("/assets/app.js").status_code == 200

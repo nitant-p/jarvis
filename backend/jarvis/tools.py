@@ -29,7 +29,10 @@ class LocalEvent(StrictModel):
     calendar_id: str
     title: str
     date: LocalDate = Field(description="LOCAL calendar date, YYYY-MM-DD. Never convert to UTC.")
-    time: LocalTime = Field(description="LOCAL 24-hour wall clock time HH:MM, without an offset.")
+    time: str = Field(
+        pattern=r"^(?:[01][0-9]|2[0-3]):[0-5][0-9]$",
+        description="LOCAL wall clock HH:MM only, e.g. 19:00 for 7 pm. No seconds or UTC offset.",
+    )
     duration_minutes: int = Field(gt=0, le=10080)
     timezone: str = "Asia/Singapore"
     location: str = ""
@@ -39,9 +42,7 @@ class LocalEvent(StrictModel):
     )
 
     def resolved(self):
-        # Tolerate a correct explicit offset, but never let it change the spoken wall clock.
-        offset_hint = self.time.utcoffset()
-        naive = datetime.combine(self.date, self.time.replace(tzinfo=None))
+        naive = datetime.combine(self.date, LocalTime.fromisoformat(self.time))
         tz = ZoneInfo(self.timezone)
         candidates = [naive.replace(tzinfo=tz, fold=f) for f in (0, 1)]
         valid = {
@@ -49,8 +50,6 @@ class LocalEvent(StrictModel):
             for c in candidates
             if c.astimezone(UTC).astimezone(tz).replace(tzinfo=None) == naive
         }
-        if offset_hint is not None:
-            valid = {offset: c for offset, c in valid.items() if offset == offset_hint}
         if self.utc_offset_minutes is not None:
             valid = {
                 offset: c
