@@ -1,0 +1,35 @@
+flowchart TB
+  subgraph host[Owned hardware in development - CPU Linux target later]
+    UI[Phone / desktop browser - React]
+    API[FastAPI - authenticated HTTP]
+    Worker[One durable worker]
+    Audio[FFmpeg + whisper.cpp small.en]
+    Agent[Bounded dialogue orchestrator]
+    LLM[llama-server - Qwen 4B Q4_K_M]
+    MCP[Private MCP server - stdio]
+    Service[CalendarService - validation and proposals]
+    DB[(SQLite WAL - events / conversations / proposals / jobs / audit)]
+    Execute[Trusted approved-operation executor]
+    Local[Local calendar adapter]
+    Google[Google Calendar adapter]
+    UI -->|Record / type / CRUD / accept| API
+    API -->|Save capture or approved operation| DB
+    DB -->|Claim leased job| Worker
+    Worker --> Audio
+    Audio -->|Transcript; remove temporary audio| Agent
+    Agent <-->|Tool calls| LLM
+    Agent <-->|MCP client| MCP
+    MCP --> Service
+    API --> Service
+    Service -->|Stage exact proposal| DB
+    DB -->|Poll preview and result| API
+    API --> UI
+    Worker --> Execute
+    Execute --> Local
+    Execute --> Google
+    Local --> DB
+    Google <-->|Observe and reconcile| DB
+  end
+  Google <-->|OAuth, minimal event fields, etags| Cloud[Google Calendar API]
+  Cloud <--> Apple[Apple Calendar displays Google account]
+  Future[Deferred planner / optimization] -.->|Future proposals through same service| Service

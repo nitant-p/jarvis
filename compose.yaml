@@ -1,0 +1,42 @@
+services:
+  api:
+    build: .
+    image: jarvis:local
+    environment: &app-env
+      JARVIS_DATA_DIR: /app/data
+      JARVIS_TOKEN: ${JARVIS_TOKEN:?Set JARVIS_TOKEN in .env}
+      JARVIS_TIMEZONE: ${JARVIS_TIMEZONE:-Asia/Singapore}
+      JARVIS_LLM_URL: http://llm:8081
+      JARVIS_WHISPER_MODEL: /models/ggml-small.en.bin
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - jarvis-data:/app/data
+    restart: unless-stopped
+  worker:
+    image: jarvis:local
+    build: .
+    command: ["python", "-m", "jarvis.worker"]
+    environment: *app-env
+    volumes:
+      - jarvis-data:/app/data
+      - ${JARVIS_MODELS_DIR:-./models}:/models:ro
+    depends_on:
+      api:
+        condition: service_healthy
+      llm:
+        condition: service_started
+    healthcheck:
+      disable: true
+    restart: unless-stopped
+  llm:
+    image: jarvis:local
+    build: .
+    command: ["llama-server", "-m", "/models/Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "--host", "0.0.0.0", "--port", "8081", "-c", "4096", "--jinja", "--reasoning", "off", "-np", "1", "-t", "4"]
+    volumes:
+      - ${JARVIS_MODELS_DIR:-./models}:/models:ro
+    healthcheck:
+      disable: true
+    restart: unless-stopped
+volumes:
+  jarvis-data:

@@ -1,0 +1,14 @@
+[
+  {
+    "repo": "ggerganov/whisper.cpp",
+    "filename": "ggml-small.en.bin",
+    "revision": "5359861c739e955e79d9a303bcbc70fb988958b1",
+    "sha256": "c6138d6d58ecc8322097e0f987c32f1be8bb0a18532a3f88f734d1bbf9c41e5d"
+  },
+  {
+    "repo": "unsloth/Qwen3-4B-Instruct-2507-GGUF",
+    "filename": "Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "revision": "a06e946bb6b655725eafa393f4a9745d460374c9",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  }
+]
