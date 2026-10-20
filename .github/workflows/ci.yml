@@ -37,7 +37,7 @@ jobs:
           .venv/bin/alembic check
           .venv/bin/alembic downgrade base
           .venv/bin/alembic upgrade head
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: backend-coverage
           path: coverage.xml
@@ -62,7 +62,7 @@ jobs:
       - run: npm run build --prefix frontend
       - run: npm exec --prefix frontend -- playwright install --with-deps chromium
       - run: npm run test:e2e --prefix frontend
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: browser-results
